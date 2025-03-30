@@ -19,27 +19,20 @@ class YDirection(Enum):
     DOWN = -1
 
 
-class GameObject(Label):
-    def __init__(self, **kwargs):
-        super().__init__()
+class GameObject:
+    def __init__(self, playground: Container):
+        self.playground = playground
         self.x = 0
         self.y = 0
         self.bounce_on_edge = True
         self.x_direction = XDirection.RIGHT
         self.y_direction = YDirection.DOWN
-
-    def on_mount(self):
-        self.update("*")
-        self.styles.position = "absolute"
-        self.update_position()
+        self.ball = Label("*")
+        self.textual_widgets = [self.ball]
 
     def update_position(self):
-        parent = self.parent
-        if parent:
-            x_max = parent.container_size.width - 1
-            y_max = parent.container_size.height - 1
-        else:
-            raise RuntimeError("Parent container not found")
+        x_max = self.playground.container_size.width - 1
+        y_max = self.playground.container_size.height - 1
 
         if self.x_direction == XDirection.RIGHT:
             self.x += BALL_X_SPEED
@@ -63,7 +56,7 @@ class GameObject(Label):
             if self.bounce_on_edge:
                 self.y_direction = YDirection.DOWN
 
-        self.styles.offset = round(self.x), round(self.y)
+        self.ball.styles.offset = round(self.x), round(self.y)
 
 
 class Playground(Container):
@@ -75,16 +68,21 @@ class GameApp(App):
 
     def __init__(self):
         super().__init__()
-        ball = GameObject()
+
+        self.playground = Playground()
+
+        ball = GameObject(playground=self.playground)
         self.game_objects = [ball]
-        self.playground = Playground(*self.game_objects)
 
     def compose(self) -> ComposeResult:
-        self.star = GameObject()
         yield self.playground
 
     def on_mount(self):
         self.set_interval(0.02, self.update_game_objects)
+        widgets = [
+            widget for obj in self.game_objects for widget in obj.textual_widgets
+        ]
+        self.playground.mount(*widgets)
 
     def update_game_objects(self):
         for obj in self.game_objects:
