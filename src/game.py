@@ -20,13 +20,20 @@ class YDirection(Enum):
 
 
 class GameObject:
-    def __init__(self, playground: Container):
+    def __init__(
+        self,
+        playground: Container,
+        x_init=0,
+        y_init=0,
+        x_direction_start=XDirection.RIGHT,
+        y_direction_start=YDirection.DOWN,
+    ):
         self.playground = playground
-        self.x = 0
-        self.y = 0
+        self.x = x_init
+        self.y = y_init
         self.bounce_on_edge = True
-        self.x_direction = XDirection.RIGHT
-        self.y_direction = YDirection.DOWN
+        self.x_direction = x_direction_start
+        self.y_direction = y_direction_start
         self.ball = Label("*")
         self.textual_widgets = [self.ball]
 
@@ -71,8 +78,15 @@ class GameApp(App):
 
         self.playground = Playground()
 
-        ball = GameObject(playground=self.playground)
-        self.game_objects = [ball]
+        ball1 = GameObject(playground=self.playground, x_init=10, y_init=10)
+        ball2 = GameObject(
+            playground=self.playground,
+            x_init=20,
+            y_init=20,
+            x_direction_start=XDirection.LEFT,
+            y_direction_start=YDirection.UP,
+        )
+        self.game_objects = [ball1, ball2]
 
     def compose(self) -> ComposeResult:
         yield self.playground
