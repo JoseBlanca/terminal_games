@@ -5,6 +5,9 @@ from textual.containers import Container
 from textual.widgets import Label
 from textual.reactive import reactive
 
+BALL_X_SPEED = 1
+BALL_Y_SPEED = 1
+
 
 class XDirection(Enum):
     LEFT = -1
@@ -39,9 +42,9 @@ class GameObject(Label):
             raise RuntimeError("Parent container not found")
 
         if self.x_direction == XDirection.RIGHT:
-            self.x += 1
+            self.x += BALL_X_SPEED
         else:
-            self.x -= 1
+            self.x -= BALL_X_SPEED
         if self.x >= x_max:
             if self.bounce_on_edge:
                 self.x_direction = XDirection.LEFT
@@ -50,9 +53,9 @@ class GameObject(Label):
                 self.x_direction = XDirection.RIGHT
 
         if self.y_direction == YDirection.UP:
-            self.y -= 1
+            self.y -= BALL_Y_SPEED
         else:
-            self.y += 1
+            self.y += BALL_Y_SPEED
         if self.y >= y_max:
             if self.bounce_on_edge:
                 self.y_direction = YDirection.UP
@@ -60,7 +63,7 @@ class GameObject(Label):
             if self.bounce_on_edge:
                 self.y_direction = YDirection.DOWN
 
-        self.styles.offset = self.x, self.y
+        self.styles.offset = round(self.x), round(self.y)
 
 
 class GameApp(App):
