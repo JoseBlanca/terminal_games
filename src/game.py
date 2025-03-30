@@ -66,18 +66,29 @@ class GameObject(Label):
         self.styles.offset = round(self.x), round(self.y)
 
 
+class Playground(Container):
+    pass
+
+
 class GameApp(App):
     CSS = "Screen { background: black; }"
 
+    def __init__(self):
+        super().__init__()
+        ball = GameObject()
+        self.game_objects = [ball]
+        self.playground = Playground(*self.game_objects)
+
     def compose(self) -> ComposeResult:
         self.star = GameObject()
-        yield Container(self.star)
+        yield self.playground
 
     def on_mount(self):
         self.set_interval(0.02, self.update_game_objects)
 
     def update_game_objects(self):
-        self.star.update_position()
+        for obj in self.game_objects:
+            obj.update_position()
 
 
 if __name__ == "__main__":
